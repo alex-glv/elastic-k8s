@@ -23,10 +23,32 @@ spec:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
         ports:
         - containerPort: 9200
-          name: es
+          name: http
+          protocol: TCP
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
         volumeMounts:
         - name: es-storage
           mountPath: /usr/share/elasticsearch/data
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 9300
+          initialDelaySeconds: 360
+          periodSeconds: 20
+        resources:
+          requests:
+            memory: 1024M
+            cpu: 0.25
+          limits:
+            memory: 1024M
+            cpu: 0.25
         env:
         - name: node.name
           valueFrom:
@@ -39,20 +61,13 @@ spec:
             fieldRef:
               fieldPath: metadata.labels['service']
         - name: ES_JAVA_OPTS
-          value: "-Xms1024m -Xmx1024m"
+          value: "-Xms512m -Xmx512m"
         - name: node.store.allow_mmap
           value: "false"
         - name: cluster.initial_master_nodes
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        resources:
-          requests:
-            memory: 1024M
-            cpu: 0.2
-          limits:
-            memory: 1024M
-            cpu: 0.5
   volumeClaimTemplates:
   - metadata:
       name: es-storage
