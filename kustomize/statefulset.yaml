@@ -7,14 +7,16 @@ spec:
     matchLabels:
       service: elasticsearch
   serviceName: elasticsearch
-  replicas: 1
-  template:
+  replicas: 0
+  template: 
     metadata:
       labels:
         service: elasticsearch
     spec:
       terminationGracePeriodSeconds: 5
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
       containers:
       - name: elasticsearch
@@ -30,10 +32,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        # - name: cluster.name
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.labels["service"]
+        - name: cluster.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['service']
         - name: bootstrap.memory_lock
           value: "true"
         - name: ES_JAVA_OPTS
