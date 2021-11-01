@@ -1,0 +1,18 @@
+bases:
+  - ../../base
+namespace: elastic
+
+commonLabels:
+  env-type: prod
+
+patchesStrategicMerge:
+- patch.statefulset.resources.yaml
+
+configMapGenerator:
+- name: elasticsearch-properties
+  literals:
+    - ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
+    - cluster.initial_master_nodes="elasticsearch-0,elasticsearch-1,elasticsearch-2"
+    - node.store.allow_mmap="false"
+    - node.roles="master,data"
+

@@ -1,0 +1,16 @@
+resources:
+  - namespace.yaml
+  - elasticsearch.service.yaml
+  - elasticsearch.statefulset.yaml
+
+namespace: elastic
+
+configMapGenerator:
+- name: elasticsearch-properties
+  literals:
+    - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+    - cluster.initial_master_nodes="elasticsearch-0,elasticsearch-1,elasticsearch-2"
+    - node.store.allow_mmap="false"
+    - node.roles="master,data"
+    - discovery.type=""
+

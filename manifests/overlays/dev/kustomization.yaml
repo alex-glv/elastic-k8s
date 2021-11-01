@@ -1,0 +1,20 @@
+bases:
+  - ../../base
+
+namespace: dev-elastic
+
+commonLabels:
+  env-type: dev
+
+patchesStrategicMerge:
+- patch.statefulset.resources.yaml
+
+configMapGenerator:
+- name: elasticsearch-properties
+  behavior: merge
+  literals:
+    - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+    - cluster.initial_master_nodes="elasticsearch-0"
+    - node.store.allow_mmap="false"
+    - node.roles="master,data"
+    - discovery.type="single-node"

@@ -58,7 +58,9 @@ spec:
 
         env:
         - name: discovery.zen.ping.unicast.hosts
-          value: "elasticsearch"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['service']
 
         - name: node.name
           valueFrom:
@@ -66,7 +68,10 @@ spec:
               fieldPath: metadata.name
 
         - name: node.roles
-          value: "master,data"
+          valueFrom:
+            configMapKeyRef:
+              name: elasticsearch-properties
+              key: node.roles
 
         - name: cluster.name
           valueFrom:
@@ -74,18 +79,28 @@ spec:
               fieldPath: metadata.labels['service']
 
         - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
+          valueFrom:
+            configMapKeyRef:
+              name: elasticsearch-properties
+              key: ES_JAVA_OPTS
 
         - name: node.store.allow_mmap
-          value: "false"
-          
-        - name: cluster.initial_master_nodes
           valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
+            configMapKeyRef:
+              name: elasticsearch-properties
+              key: node.store.allow_mmap
 
         - name: cluster.initial_master_nodes
-          value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+          valueFrom:
+            configMapKeyRef:
+              name: elasticsearch-properties
+              key: cluster.initial_master_nodes
+
+        - name: discovery.type
+          valueFrom:
+            configMapKeyRef:
+              name: elasticsearch-properties
+              key: discovery.type
 
       affinity:
         podAntiAffinity:

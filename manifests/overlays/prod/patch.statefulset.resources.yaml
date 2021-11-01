@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2048M
+              cpu: 1
+            limits:
+              memory: 2048M
+              cpu: 1
