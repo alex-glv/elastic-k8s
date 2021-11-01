@@ -82,7 +82,7 @@ spec:
           value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
       affinity:
           podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
+            requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
                 - key: service

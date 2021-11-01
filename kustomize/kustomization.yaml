@@ -1,6 +1,6 @@
 resources:
   - namespace.yaml
-  - service.yaml
-  - statefulset.yaml
+  - elasticsearch.service.yaml
+  - elasticsearch.statefulset.yaml
 
 namespace: elastic
