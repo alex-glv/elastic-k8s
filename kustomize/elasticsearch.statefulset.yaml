@@ -72,7 +72,7 @@ spec:
 
         - name: node.store.allow_mmap
           value: "false"
-
+          
         - name: cluster.initial_master_nodes
           valueFrom:
             fieldRef:
@@ -81,9 +81,11 @@ spec:
         - name: cluster.initial_master_nodes
           value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
       affinity:
-          podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
                 matchExpressions:
                 - key: service
                   operator: In
