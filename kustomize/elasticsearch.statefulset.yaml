@@ -19,6 +19,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
@@ -29,20 +30,24 @@ spec:
         - containerPort: 9300
           name: transport
           protocol: TCP
+
         volumeMounts:
         - name: es-storage
           mountPath: /usr/share/elasticsearch/data
+
         readinessProbe:
           httpGet:
             path: /
             port: 9200
           initialDelaySeconds: 300
           periodSeconds: 10
+
         livenessProbe:
           tcpSocket:
             port: 9300
           initialDelaySeconds: 300
           periodSeconds: 20
+
         resources:
           requests:
             memory: 1024M
@@ -50,6 +55,7 @@ spec:
           limits:
             memory: 1024M
             cpu: 0.5
+
         env:
         - name: discovery.zen.ping.unicast.hosts
           value: "elasticsearch"
@@ -80,6 +86,7 @@ spec:
 
         - name: cluster.initial_master_nodes
           value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
