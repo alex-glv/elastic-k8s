@@ -46,10 +46,10 @@ spec:
         resources:
           requests:
             memory: 1024M
-            cpu: 1
+            cpu: 0.5
           limits:
             memory: 1024M
-            cpu: 1
+            cpu: 0.5
         env:
         - name: discovery.zen.ping.unicast.hosts
           value: "elasticsearch"
@@ -80,6 +80,17 @@ spec:
 
         - name: cluster.initial_master_nodes
           value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+      affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: service
+                  operator: In
+                  values:
+                    - elasticsearch
+              topologyKey: kubernetes.io/hostname
+
   volumeClaimTemplates:
   - metadata:
       name: es-storage
