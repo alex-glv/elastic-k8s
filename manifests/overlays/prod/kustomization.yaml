@@ -1,6 +1,6 @@
 bases:
   - ../../base
-namespace: elastic
+namespace: elasticsearch
 
 commonLabels:
   env-type: prod
