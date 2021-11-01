@@ -7,7 +7,8 @@ spec:
     matchLabels:
       service: elasticsearch
   serviceName: elasticsearch
-  replicas: 1
+  replicas: 3
+  podManagementPolicy: Parallel
   template: 
     metadata:
       labels:
@@ -45,29 +46,40 @@ spec:
         resources:
           requests:
             memory: 1024M
-            cpu: 0.25
+            cpu: 1
           limits:
             memory: 1024M
-            cpu: 0.25
+            cpu: 1
         env:
+        - name: discovery.zen.ping.unicast.hosts
+          value: "elasticsearch"
+
         - name: node.name
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+
         - name: node.roles
           value: "master,data"
+
         - name: cluster.name
           valueFrom:
             fieldRef:
               fieldPath: metadata.labels['service']
+
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
+
         - name: node.store.allow_mmap
           value: "false"
+
         - name: cluster.initial_master_nodes
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+
+        - name: cluster.initial_master_nodes
+          value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
   volumeClaimTemplates:
   - metadata:
       name: es-storage

@@ -9,4 +9,9 @@ As per [https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.
 Hence, this deployment disables node.store.allow_mmap setting.
 
 ## Lock memory option
-<TODO>
+
+
+## RBAC
+
+
+## PodManagementPolicy
