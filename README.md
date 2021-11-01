@@ -15,3 +15,5 @@ Hence, this deployment disables node.store.allow_mmap setting.
 
 
 ## PodManagementPolicy
+
+## Health check
