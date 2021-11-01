@@ -36,8 +36,7 @@ statefulset.apps "elasticsearch" deleted
 The following caveats should be considered with regards to Elasticsearch configuration
 
 ###  vm.max_map_count is not set to what Elasticsearch recommends for optimal performance
-As per [k8s-virtual-memory.html](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html) suggestion, vm.max_map_count default value on Linux should be increased, however this requires to run priveleged containers.
-Hence, this deployment disables node.store.allow_mmap setting.
+As per [k8s-virtual-memory.html](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html) suggestion, `vm.max_map_count` default value on Linux should be increased, however this requires to run priveleged containers, which is outside of the scope of this deployment requirements, this deployment disables `node.store.allow_mmap` setting.
 
 ### RBAC
 A role with the following minimum RBAC is required:
