@@ -31,11 +31,47 @@ All resources will be created in `elasticsearch` namespace.
 
 ## Deployment verification and troubleshooting
 It takes around 2 minutes for cluster pods status to change to Ready.
-To verify the cluster status, the following command can be used:
+
+You can also run kubectl command to track pods status:
+```
+kubectl get pods --selector=service=elasticsearch  -n elasticsearch -w
+```
+The output should be similar to this:
+```
+% kubectl get pods --selector=service=elasticsearch  -n elasticsearch -w
+NAME              READY   STATUS    RESTARTS   AGE
+elasticsearch-0   0/1     Running   0          27s
+elasticsearch-1   0/1     Running   0          27s
+elasticsearch-2   0/1     Running   0          27s
+```
+
+After all pods turned to status Ready, you can veriy cluster status with elasticsearch api.
+
 ```
 kubectl run debug --rm --quiet --restart=Never -n elasticsearch --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
 ```
 The output should display how many nodes and shards are in healthy state.
+
+```
+ % kubectl run debug --rm --quiet --restart=Never -n elasticsearch --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
+{
+  "cluster_name": "elasticsearch",
+  "status": "green",
+  "timed_out": false,
+  "number_of_nodes": 3,
+  "number_of_data_nodes": 3,
+  "active_primary_shards": 6,
+  "active_shards": 12,
+  "relocating_shards": 0,
+  "initializing_shards": 0,
+  "unassigned_shards": 0,
+  "delayed_unassigned_shards": 0,
+  "number_of_pending_tasks": 2,
+  "number_of_in_flight_fetch": 0,
+  "task_max_waiting_in_queue_millis": 623,
+  "active_shards_percent_as_number": 100
+}
+```
 
 ### Kibana
 Kibana deployment is running alongside elasticsearch and configured to use the elasticsearch service endpoint.
