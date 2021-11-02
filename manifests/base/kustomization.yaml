@@ -2,6 +2,8 @@ resources:
   - namespace.yaml
   - elasticsearch.service.yaml
   - elasticsearch.statefulset.yaml
+  - kibana.deployment.yaml
+  - kibana.service.yaml
 
 namespace: elastic
 

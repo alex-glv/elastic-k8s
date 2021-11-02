@@ -1,5 +1,6 @@
-bases:
-  - ../../base
+resources:
+- ../../base
+
 namespace: elasticsearch
 
 commonLabels:
@@ -9,11 +10,18 @@ patchesStrategicMerge:
 - patch.statefulset.resources.yaml
 
 configMapGenerator:
-- name: elasticsearch-properties
-  behavior: merge
+- behavior: merge
   literals:
-    - ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
-    - cluster.initial_master_nodes="elasticsearch-0,elasticsearch-1,elasticsearch-2"
-    - node.store.allow_mmap="false"
-    - node.roles="master,data"
+  - ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
+  - cluster.initial_master_nodes="elasticsearch-0,elasticsearch-1,elasticsearch-2"
+  - node.store.allow_mmap="false"
+  - node.roles="master,data"
+  name: elasticsearch-properties
 
+images:
+- name: docker.elastic.co/elasticsearch/elasticsearch
+  newTag: 7.15.1
+  #newName: ...
+- name: docker.elastic.co/kibana/kibana
+  newTag: 7.15.1
+  #newName: ...

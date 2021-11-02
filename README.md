@@ -41,6 +41,14 @@ kubectl run debug --rm --quiet --restart=Never --image curlimages/curl -ti -- cu
 ```
 The output should display how many nodes and shards are in healthy state.
 
+### Kibana
+Kibana deployment is running alongside elasticsearch and configured to use the elasticsearch service endpoint.
+To access kibana, run
+```
+kubectl port-forward svc/kibana 5601:5601
+```
+Kibana should be accessible from `localhost:5601`
+
 ## Production use limitations
 The following caveats should be considered with regards to Elasticsearch configuration
 
@@ -50,21 +58,13 @@ As per [k8s-virtual-memory.html](https://www.elastic.co/guide/en/cloud-on-k8s/cu
 ### Health check
 It is recommended to have lenient health checks on 9200 port api as during high load this api might be slow to respond. 
 
-## Configuration details
+## Configuration changes
+To customize the deployment to tailor to your needs, consider creating another overlay.
 
-### PodManagementPolicy
-A podManagementpolicy is set to Parallel so as to allow quicker creation of the cluster by letting StatefulSet create pods in parallell, rather than ordered.
+Copy the `manifests/overlays/prod` to another folder, eg `manifests/overlays/custom`
 
-### Health check
-For liveness: a tcp probe on port 9300.
-For readiness: an http probe on port 9200.
+Now, open `manifests/overlays/custom/kustomization.yaml`, in `configMapGenerator` section you can customize roles and jvm options.
 
-### Cluster bootstrap
-The cluster is configured with initial master nodes to `elasticsearch-0`, `elasticsearch-1`, `elasticsearch-2`
-It's not recommended to create cluster with less than 3 nodes for high availability purposes.
+To change the elasticsearch or kibana image, in the `kustomization.yaml ` define a new tag and/or name to override the base image (if you store images in a private registry) 
 
-### Pod affinity
-The statefulset is configured with pod anti-affinity preference to prevent co-locating elasticsearch nodes on the same hosts. If that is not possible (ie there are less Kubernetes nodes than elasticsearch nodes) then (some or all)  pods will eventually be co-located on the same node.
-
-To guarantee Elasticsearch pods are spread across Kubernetes nodes ensure there are enough Kubernetes nodes in your cluster.
-
+To change the resources limits, edit the `patch.statefulset.resources.yaml` file.
