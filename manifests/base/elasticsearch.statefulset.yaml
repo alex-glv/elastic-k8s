@@ -39,13 +39,13 @@ spec:
           httpGet:
             path: /
             port: 9200
-          initialDelaySeconds: 300
+          initialDelaySeconds: 120
           periodSeconds: 10
 
         livenessProbe:
           tcpSocket:
             port: 9300
-          initialDelaySeconds: 300
+          initialDelaySeconds: 120
           periodSeconds: 20
 
         resources:
