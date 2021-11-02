@@ -45,8 +45,7 @@ kubectl patch statefulset -n elasticsearch elasticsearch -p '{"spec":{"updateStr
 ```
 This will prevent deleting nodes with ordinal lower than 3 (so, all nodes of our 3 node cluster will remain)
 
-Patch the statefulset (in this case, we'll update the image):
-with new resource
+Patch the statefulset (in this case, we'll update the image) with new resource:
 ```
 kubectl patch statefulset -n elasticsearch elasticsearch --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"docker.elastic.co/elasticsearch/elasticsearch:7.15.1"}]'
 ```
