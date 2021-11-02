@@ -10,10 +10,10 @@ spec:
         - name: elasticsearch
           resources:
             requests:
-              memory: 1024M
+              memory: 1024Mi
               cpu: 2
             limits:
-              memory: 1024M
+              memory: 1024Mi
               cpu: 2
 
           readinessProbe:
