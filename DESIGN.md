@@ -79,3 +79,6 @@ kubectl run debug-2 --rm --quiet --restart=Never -n elasticsearch --image curlim
 ```
 
 It's possible to add extra replica before upgrade procedure to have 3 nodes available at all times during upgrade.
+
+## Back-up and recovery
+Since we are using persistantvolumes and pvc's, the backup could be achieved by backing up the volumes and creating daily/hourly snapshots of our data volumes.

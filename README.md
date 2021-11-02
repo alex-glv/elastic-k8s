@@ -27,17 +27,13 @@ To create the highly available version of the deployment, the following command 
 kubectl kustomize ./manifests/overlays/prod | kubectl apply -f -
 ```
 
-## Clean-up
-To clean the highly available version, run:
-```
-kubectl kustomize ./manifests/overlays/prod | kubectl delete -f -
-```
+All resources will be created in `elasticsearch` namespace.
 
 ## Deployment verification and troubleshooting
 It takes around 2 minutes for cluster pods status to change to Ready.
 To verify the cluster status, the following command can be used:
 ```
-kubectl run debug --rm --quiet --restart=Never --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
+kubectl run debug --rm --quiet --restart=Never -n elasticsearch --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
 ```
 The output should display how many nodes and shards are in healthy state.
 
@@ -48,6 +44,12 @@ To access kibana, run
 kubectl port-forward svc/kibana 5601:5601
 ```
 Kibana should be accessible from `localhost:5601`
+
+## Clean-up
+To clean the highly available version, run:
+```
+kubectl kustomize ./manifests/overlays/prod | kubectl delete -f -
+```
 
 ## Production use limitations
 The following caveats should be considered with regards to Elasticsearch configuration
