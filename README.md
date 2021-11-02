@@ -95,7 +95,14 @@ The following caveats should be considered with regards to Elasticsearch configu
 As per [k8s-virtual-memory.html](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html) suggestion, `vm.max_map_count` default value on Linux should be increased, however this requires to run priveleged containers, which is outside of the scope of this deployment requirements. Therefore this deployment disables `node.store.allow_mmap` setting.
 
 ### Health check
-It is recommended to have lenient health checks on 9200 port api as during high load this api might be slow to respond. 
+It is recommended to have lenient health checks on 9200 port API as during high load this API might be slow to respond. 
+This deployment only queries http API endpoint.
+
+### Kubernetes nodes and anti-affinity
+It's highly recommended to have matching count of Kubernetes nodes to Elasticsearch nodes.
+This deployment will attempt to not have Elasticsearch pods co-located, if possible.
+However, if there are less Kubernetes nodes than Elasticsearch nodes, the pods will be co-located, in a case of node failure it's possible to lose majority of nodes.
+
 
 ## Configuration changes
 To customize the deployment to tailor to your needs, consider creating another overlay.
