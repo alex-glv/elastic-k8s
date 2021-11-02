@@ -10,6 +10,7 @@ To deploy a highly-available cluster on Kubernetes the following requirements ap
   1. get/create/delete statefulset
   1. get/create/delete service
   1. get/create/delete configmap
+  1. get/create/delete deployment 
 - (optional) jq
 
 
@@ -30,7 +31,7 @@ kubectl kustomize ./manifests/overlays/prod | kubectl apply -f -
 All resources will be created in `elasticsearch` namespace.
 
 ## Deployment verification and troubleshooting
-It takes around 2 minutes for cluster pods status to change to Ready.
+It takes around 2 minutes for cluster pods to become Ready.
 
 You can also run kubectl command to track pods status:
 ```
@@ -45,7 +46,7 @@ elasticsearch-1   0/1     Running   0          27s
 elasticsearch-2   0/1     Running   0          27s
 ```
 
-After all pods turned to status Ready, you can veriy cluster status with elasticsearch api.
+After all pods turned to Ready, you can veriy cluster status with elasticsearch api.
 
 ```
 kubectl run debug --rm --quiet --restart=Never -n elasticsearch --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
