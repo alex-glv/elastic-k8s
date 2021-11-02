@@ -8,8 +8,6 @@ spec:
   ports:
   - port: 9200
     name: elasticsearch-api
-  - port: 9300
-    name: elasticsearch-transport
   clusterIP: None
   selector:
     service: elasticsearch

@@ -10,56 +10,19 @@ To deploy a highly-available cluster on Kubernetes the following requirements ap
   1. get/create/delete statefulset
   1. get/create/delete service
   1. get/create/delete configmap
+- (optional) jq
 
 
-## Layout
-Pre-configured configuration layouts are as follows
+## Layout and structure
+kustomize is used to organise the manifests and configuration.
+There are two overlays available:
+- dev
+- prod
 
-### dev
-A single node deployment with the following resources configuration
-```
-resources:
-  requests:
-    memory: 1024M
-    cpu: 0.25
-  limits:
-    memory: 1024M
-    cpu: 0.25
-```
-Configuration parameters:
-```
-- ES_JAVA_OPTS="-Xms512m -Xmx512m"
-- cluster.initial_master_nodes=""
-- node.store.allow_mmap="false"
-- node.roles="master,data"
-- discovery.type="single-node"
-```
-### prod
-High-availability 3 node deployment with the following resources configuration
-```
-resources:
-  requests:
-    memory: 1024Mi
-    cpu: 1
-  limits:
-    memory: 2048Mi
-    cpu: 1
-```
-Configuration parameters:
-```
-- ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
-- cluster.initial_master_nodes="elasticsearch-0,elasticsearch-1,elasticsearch-2"
-- node.store.allow_mmap="false"
-- node.roles="master,data"
-```
+The most meaningful difference is `dev` deploys a single-instance cluster for development purposes, while `prod` deploys 3 instance high-availability Elasticsearch cluster. All examples below will use `prod`.
 
 ## How to run
 To create the highly available version of the deployment, the following command should be run:
-```
-kubectl kustomize ./manifests/overlays/prod | kubectl apply -f -
-```
-
-For testing, a single node deployment can be created by running the following command:
 ```
 kubectl kustomize ./manifests/overlays/prod | kubectl apply -f -
 ```
@@ -69,10 +32,14 @@ To clean the highly available version, run:
 ```
 kubectl kustomize ./manifests/overlays/prod | kubectl delete -f -
 ```
-For single node:
+
+## Deployment verification and troubleshooting
+It takes around 2 minutes for cluster pods status to change to Ready.
+To verify the cluster status, the following command can be used:
 ```
-kubectl kustomize ./manifests/overlays/dev | kubectl delete -f -
+kubectl run debug --rm --quiet --restart=Never --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health | jq
 ```
+The output should display how many nodes and shards are in healthy state.
 
 ## Production use limitations
 The following caveats should be considered with regards to Elasticsearch configuration
@@ -89,27 +56,15 @@ It is recommended to have lenient health checks on 9200 port api as during high 
 A podManagementpolicy is set to Parallel so as to allow quicker creation of the cluster by letting StatefulSet create pods in parallell, rather than ordered.
 
 ### Health check
-For liveness: a tcp probe on port 9300 is configured.
-For readiness: an http probe is configured to query port 9200.
+For liveness: a tcp probe on port 9300.
+For readiness: an http probe on port 9200.
 
 ### Cluster bootstrap
-The cluster is configured with initial master nodes to elasticsearch-0, elasticsearch-1, elasticsearch-2 (when building prod layer).
-It's not recommended to create cluster with less than 3 nodes for high availability.
+The cluster is configured with initial master nodes to `elasticsearch-0`, `elasticsearch-1`, `elasticsearch-2`
+It's not recommended to create cluster with less than 3 nodes for high availability purposes.
 
-### Resources and pod affinity
-Elasticsearch is configured with the following memory limits: 1024m for prod and 512m for dev
-While this is not sufficient for a performant cluster, it's enough to deploy the functional elasticsearch service.
-
+### Pod affinity
 The statefulset is configured with pod anti-affinity preference to prevent co-locating elasticsearch nodes on the same hosts. If that is not possible (ie there are less Kubernetes nodes than elasticsearch nodes) then (some or all)  pods will eventually be co-located on the same node.
 
 To guarantee Elasticsearch pods are spread across Kubernetes nodes ensure there are enough Kubernetes nodes in your cluster.
-
-## Deployment verification and troubleshooting
-It takes around 5 minutes for cluster pods status to change to Ready.
-To verify the cluster status, the following command could be useful:
-```
-kubectl run debug --rm --restart=Never --image curlimages/curl -ti -- curl elasticsearch:9200/_cluster/health
-```
-The output should display how many nodes and shards are in healthy state.
-
 
